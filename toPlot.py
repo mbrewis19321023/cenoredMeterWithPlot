@@ -23,17 +23,27 @@ date = []
 datetick = 0
 load = []
 solar = []
+loadMinSolar = []
 test = [1, 2, 3, 4, 5]
 
 df = pd.read_pickle("data.pkl")
 dM = df.groupby(['Year', 'Month']).Load.max().reset_index().copy()
 dMS = df.groupby(['Year', 'Month']).Solar.max().reset_index().copy()
+
+# Each iterrows is for a different set of points plotted on the graphs
 for x, row in dM.iterrows():
     date.append(str(dM.iloc[x]['Year']) + '-' + str(dM.iloc[x]['Month']))
     load.append(float(dM.iloc[x]['Load']/1000))
     datetick = x
+
+# Each iterrows is for a different set of points plotted on the graphs
 for x, row in dMS.iterrows():
-    solar.append(dMS.iloc[x]['Solar'])
+    solar.append((dMS.iloc[x]['Solar']/1000)*2)
+
+# Each iterrows is for a different set of points plotted on the graphs
+for x, i in enumerate(load):
+    loadMinSolar.append(0)
+    loadMinSolar[x] = load[x] - solar[x]
 
 for x, i in enumerate(date):
     a = i.split("-")
@@ -62,17 +72,26 @@ for x, i in enumerate(date):
     if a[1] == '12.0':
         date[x] = "Dec" + '-' + "20" + str(a[0].split('.')[0])
 
-plt.title("Farm Otjikaru 2ND, Supply Point: 8017 - Max demand")
+plt.title("Kalkfeld Service Station, Solar Maximum vs Import Maximum per month")
 plt.xticks(rotation='vertical')
 plt.xlabel("Date")
 plt.ylabel("Demand (kVA)")
-plt.plot(date, load, 'bo-', label="Demand", )
-# plt.plot(date, solar, 'go-', label="Average Power Factor", )
+plt.plot(date, load, 'bo-', label="Import Maximum (Maximum Demand)", )
+plt.plot(date, solar, 'go-', label="Export Maximum (Solar Exported)", )
+plt.plot(date, loadMinSolar, 'ro-', label="Import Maximum - Solar Maximum", )
 for i, v in enumerate(load):
-    plt.text(i, v + 1, "%.2f" % v, rotation = 90,ha="center", color = "blue")
-# for i, v in enumerate(solar):
-#     plt.text(i, v, "%d" % v ,rotation = 90, ha="center", color = "green")
-plt.ylim(-1, 50)
+    plt.text(i, v + 1, "%.2f" % v, rotation=90, ha="center", color="blue")
+for i, v in enumerate(solar):
+    if (i < 4): 
+        plt.text(i, v - 1, "%.2f" % v, rotation=90, ha="center", color="green")
+    elif (i >= 4):
+         plt.text(i, v + 1, "%.2f" % v, rotation=90, ha="center", color="green")
+for i, v in enumerate(loadMinSolar):
+    if (i > 4): 
+        plt.text(i, v - 1, "%.2f" % v, rotation=90, ha="center", color="red")
+    elif (i <= 4):
+         plt.text(i, v + 1, "%.2f" % v, rotation=90, ha="center", color="red")
+plt.ylim(-1, 15)
 plt.legend()
 
 plt.show()
@@ -92,4 +111,3 @@ plt.show()
 # plt.legend()
 
 # plt.show()
-

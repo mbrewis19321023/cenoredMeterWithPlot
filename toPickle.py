@@ -35,6 +35,7 @@ for x, i in enumerate(lines):
         r2 = re.findall(dateModify,p3)
         o1 = p3.split(" ")
         p1[6] = p1[6].replace(" ","")
+        p1[4] = p1[4].replace(" ","")
 
         # p2 = p1[4].split("-")
         # p2[0] = p2[0].replace(" ","")
@@ -48,7 +49,7 @@ for x, i in enumerate(lines):
         # p3 = str(p3[0]) + ":" + p3[1] 
         # p3 = p3.replace(" ","")
 
-        tempList = [int(r2[0][2]), int(r2[0][1]), int(r2[0][0]), o1[1], float(p1[6]), 0]
+        tempList = [int(r2[0][2]), int(r2[0][1]), int(r2[0][0]), o1[1], float(p1[6]), float(p1[4])]
         df.loc[x] = tempList
     except:
         pass
